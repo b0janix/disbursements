@@ -1,0 +1,19 @@
+{
+    "name": "bojan/calculate-disbursements",
+    "description": "It parses a csv file and calculates disbursements from the data within",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Bojan Nedelkovski",
+            "email": "nedelkovskibojan@yahoo.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
