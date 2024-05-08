@@ -4,6 +4,7 @@ namespace App\Service;
 
 use DateTime;
 use Exception;
+use Throwable;
 
 readonly class FileParser
 {
@@ -35,26 +36,32 @@ readonly class FileParser
             $i = 0;
             $keys = [];
 
-            while($row = str_replace(["\n","\r","\v","\t","\0"," "], ',', fgetcsv($handle, 1000)[0] ?? '')) {
+            while($row = fgetcsv($handle, 1000, "\t")) {
 
                 if (!empty($row)) {
 
-                    $arr = array_values(explode(',', $row));
-
                     if ($i === 0) {
-                        $keys = array_values($arr);
+                        $keys = $row;
                         $i++;
                         continue;
                     }
 
-                    $resArray = array_combine($keys, array_slice($arr, 0, count($keys)));
-
                     try {
+                        $resArray = array_combine($keys, $row);
                         $postedDate = (new DateTime($resArray['posted-date']))->format('Y-m');
                     } catch (Exception) {
+                        var_dump($keys, $row);
                         continue;
+                    } catch (\Throwable) {
+                        try {
+                            $postedDate = (new DateTime($resArray['posted-date']))->format('Y-m');
+                        } catch (Exception) {
+                            var_dump($keys, $row);
+                            continue;
+                        }
+                        $keysTemp = array_slice($keys, 0, count($keys) - 1);
+                        $resArray = array_combine($keysTemp, $row);
                     }
-
                     if ($postedDate === $yearMonth) {
                         $data['income'] += $this->calculation->calculateIncome($resArray);
                     }
